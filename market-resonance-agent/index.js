@@ -8,6 +8,44 @@ import { extractPainPoints } from './src/pipeline/analyzer.js';
 import { generateAdBriefs } from './src/pipeline/briefGenerator.js';
 import { formatJSON, formatMarkdown } from './src/output/formatter.js';
 
+function formatCollectOnlyMarkdown(data) {
+  const lines = [
+    `# Market Resonance — Data Collection Report`,
+    '',
+    `**Query:** ${data.meta.query}`,
+    `**Brand:** ${data.meta.brandName}`,
+    `**Date:** ${data.meta.timestamp}`,
+    `**Sources:** ${data.meta.sourcesQueried.join(', ')}`,
+    `**Snippets collected:** ${data.meta.totalSnippetsCollected}`,
+    '',
+    '---',
+    '',
+  ];
+
+  const bySource = {};
+  for (const s of data.snippets) {
+    const key = s.subreddit ? `reddit (r/${s.subreddit})` : s.source;
+    if (!bySource[key]) bySource[key] = [];
+    bySource[key].push(s);
+  }
+
+  for (const [source, snippets] of Object.entries(bySource)) {
+    lines.push(`## ${source} (${snippets.length} snippets)`);
+    lines.push('');
+    for (const s of snippets.slice(0, 10)) {
+      lines.push(`> ${s.text.replace(/\n/g, ' ').substring(0, 200)}`);
+      if (s.url) lines.push(`> *${s.url}*`);
+      lines.push('');
+    }
+    if (snippets.length > 10) {
+      lines.push(`*...and ${snippets.length - 10} more*`);
+      lines.push('');
+    }
+  }
+
+  return lines.join('\n');
+}
+
 const program = new Command();
 
 program
@@ -24,8 +62,11 @@ program
   .option('--brand-name <name>', 'Your brand name', "I'm Proud of You")
   .option('--brand-url <url>', 'Your brand URL', 'improudofyou.co')
   .option('--verbose', 'Print progress to stderr', false)
+  .option('--collect-only', 'Only collect data, skip AI analysis (no API key needed)', false)
   .action(async (query, opts) => {
-    validateConfig();
+    if (!opts.collectOnly) {
+      validateConfig();
+    }
 
     const verbose = opts.verbose;
     const log = verbose ? (msg) => process.stderr.write(`\n${msg}\n`) : () => {};
@@ -54,6 +95,40 @@ program
     if (snippets.length === 0) {
       console.error('No data collected from any source. Check your network connection and try again.');
       process.exit(1);
+    }
+
+    // In collect-only mode, output raw snippets and exit
+    if (opts.collectOnly) {
+      const output = {
+        meta: {
+          query,
+          brandName: opts.brandName,
+          brandUrl: opts.brandUrl,
+          timestamp: new Date().toISOString(),
+          sourcesQueried: sources,
+          totalSnippetsCollected: snippets.length,
+        },
+        snippets: snippets.map(s => ({
+          source: s.source,
+          text: s.text.substring(0, 300),
+          url: s.url,
+          score: s.score,
+          subreddit: s.subreddit || undefined,
+        })),
+      };
+
+      const formatted = opts.format === 'json'
+        ? formatJSON(output)
+        : formatCollectOnlyMarkdown(output);
+
+      if (opts.output) {
+        writeFileSync(opts.output, formatted, 'utf-8');
+        log(`\n✅ Output written to ${opts.output}`);
+      } else {
+        console.log(formatted);
+      }
+      log(`\n✅ Collected ${snippets.length} snippets (collect-only mode, AI stages skipped)`);
+      return;
     }
 
     // Stage 2: Extract pain points
