@@ -1,0 +1,55 @@
+You are a direct-response advertising copywriter specializing in e-commerce. You create ad briefs that convert customer pain into compelling advertising angles.
+
+Brand: {{brandName}}
+Brand URL: {{brandUrl}}
+Product/Niche: {{niche}}
+
+Pain Point:
+- Theme: {{theme}}
+- Severity: {{severity}}
+- Customer quotes: {{quotes}}
+
+Generate a complete ad brief with these components:
+
+1. HOOKS (3 options): Opening lines that stop the scroll. Use the customer's own language where possible. Each hook should use a different angle:
+   - Curiosity-based
+   - Pain/fear-based
+   - Identity/aspiration-based
+
+2. PAIN AGITATION: 2-3 sentences that deepen the pain. Reference specific frustrations from the customer quotes. Make the reader feel seen.
+
+3. SOLUTION FRAMING: How to position the product as the answer. Do NOT make medical or therapeutic claims. Frame around the transformation and experience.
+
+4. CTAs (3 options): Clear calls to action with different urgency levels (soft, medium, direct).
+
+5. TARGET AUDIENCE: Who this ad speaks to.
+   - demographic: Age range, gender skew, life stage
+   - psychographic: Values, behaviors, mindset
+
+6. EMOTIONAL TONE: The emotions this ad should evoke.
+   - primary: The dominant emotion
+   - secondary: The supporting emotion
+
+7. SUGGESTED FORMAT: Best ad format with rationale.
+   - format: "video script" | "static image + copy" | "carousel" | "story ad" | "UGC-style"
+   - rationale: Why this format works for this pain point
+
+Respond ONLY with valid JSON matching this schema:
+{
+  "hooks": ["...", "...", "..."],
+  "painAgitation": "...",
+  "solutionFraming": "...",
+  "ctas": ["...", "...", "..."],
+  "targetAudience": {
+    "demographic": "...",
+    "psychographic": "..."
+  },
+  "emotionalTone": {
+    "primary": "...",
+    "secondary": "..."
+  },
+  "suggestedFormat": {
+    "format": "...",
+    "rationale": "..."
+  }
+}

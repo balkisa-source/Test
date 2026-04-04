@@ -1,0 +1,19 @@
+{
+  "name": "market-resonance-agent",
+  "version": "1.0.0",
+  "description": "Find customer pain points across the web and turn them into high-converting ad briefs",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "market-resonance": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.79.0",
+    "cheerio": "^1.0.0",
+    "commander": "^12.0.0",
+    "dotenv": "^16.4.0"
+  }
+}
