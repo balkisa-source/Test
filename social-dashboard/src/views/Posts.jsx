@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import { BarList } from '../components/charts.jsx';
-import { PILLARS } from '../data/sampleData.js';
 import { compact, engagementRate, pct, shortDate } from '../lib/format.js';
 
 const COLUMNS = [
@@ -14,18 +13,19 @@ const COLUMNS = [
   { key: 'completion', label: 'Watched to end', value: (p) => p.completion, render: (p) => pct(p.completion, 0) },
 ];
 
-export function Posts({ posts }) {
+export function Posts({ posts, pillars }) {
   const [pillar, setPillar] = useState('All');
+  const activePillar = pillars.includes(pillar) ? pillar : 'All';
   const [sort, setSort] = useState({ key: 'date', dir: -1 });
 
   const filtered = useMemo(() => {
     const column = COLUMNS.find((c) => c.key === sort.key);
     return posts
-      .filter((p) => pillar === 'All' || p.pillar === pillar)
+      .filter((p) => activePillar === 'All' || p.pillar === activePillar)
       .sort((a, b) => (column.value(a) - column.value(b)) * sort.dir);
-  }, [posts, pillar, sort]);
+  }, [posts, activePillar, sort]);
 
-  const shareRate = PILLARS.map((name) => {
+  const shareRate = pillars.map((name) => {
     const list = posts.filter((p) => p.pillar === name);
     const views = list.reduce((t, p) => t + p.views, 0);
     const shares = list.reduce((t, p) => t + p.shares + p.saves, 0);
@@ -52,9 +52,9 @@ export function Posts({ posts }) {
         <h1>Posts</h1>
         <label className="select">
           Pillar
-          <select value={pillar} onChange={(e) => setPillar(e.target.value)}>
+          <select value={activePillar} onChange={(e) => setPillar(e.target.value)}>
             <option>All</option>
-            {PILLARS.map((p) => <option key={p}>{p}</option>)}
+            {pillars.map((p) => <option key={p}>{p}</option>)}
           </select>
         </label>
       </div>

@@ -1,18 +1,21 @@
 import { useState } from 'react';
-import { PILLARS } from '../data/sampleData.js';
 import { newId } from '../lib/useStoredState.js';
 
 export const STAGES = ['Idea', 'Scripted', 'Filmed', 'Scheduled', 'Posted'];
 
-const EMPTY = { title: '', hook: '', pillar: PILLARS[0], date: '' };
+const EMPTY = { title: '', hook: '', pillar: '', date: '' };
 
-export function Planner({ plan, setPlan }) {
+export function Planner({ plan, setPlan, account }) {
   const [draft, setDraft] = useState(EMPTY);
+  const pillars = account.pillars;
+  const pillar = pillars.includes(draft.pillar) ? draft.pillar : pillars[0];
+  // Ideas saved before multi-account support belong to the first account.
+  const mine = plan.filter((item) => (item.account ?? '@improudofyou.co') === account.handle);
 
   function add(event) {
     event.preventDefault();
     if (!draft.title.trim()) return;
-    setPlan((list) => [...list, { ...draft, id: newId('d'), stage: 'Idea' }]);
+    setPlan((list) => [...list, { ...draft, pillar, account: account.handle, id: newId('d'), stage: 'Idea' }]);
     setDraft(EMPTY);
   }
 
@@ -35,7 +38,7 @@ export function Planner({ plan, setPlan }) {
   return (
     <section>
       <div className="toolbar">
-        <h1>Content planner</h1>
+        <h1>Content planner <span className="muted">· {account.handle}</span></h1>
       </div>
 
       <form className="card add-form" onSubmit={add}>
@@ -43,8 +46,8 @@ export function Planner({ plan, setPlan }) {
           onChange={(e) => setDraft({ ...draft, title: e.target.value })} />
         <input placeholder="Hook (the first line on screen)" value={draft.hook}
           onChange={(e) => setDraft({ ...draft, hook: e.target.value })} />
-        <select value={draft.pillar} onChange={(e) => setDraft({ ...draft, pillar: e.target.value })}>
-          {PILLARS.map((p) => <option key={p}>{p}</option>)}
+        <select value={pillar} onChange={(e) => setDraft({ ...draft, pillar: e.target.value })}>
+          {pillars.map((p) => <option key={p}>{p}</option>)}
         </select>
         <input type="date" value={draft.date} aria-label="Planned date"
           onChange={(e) => setDraft({ ...draft, date: e.target.value })} />
@@ -53,7 +56,7 @@ export function Planner({ plan, setPlan }) {
 
       <div className="board">
         {STAGES.map((stage, stageIndex) => {
-          const items = plan
+          const items = mine
             .filter((item) => item.stage === stage)
             .sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999'));
           return (

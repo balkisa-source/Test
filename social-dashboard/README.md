@@ -12,6 +12,7 @@ npm run dev      # http://localhost:5173
 
 | Tab | What it does |
 |---|---|
+| **Account switcher** | Top-left dropdown flips between @improudofyou.co and @letitgo.journal. Analytics and the planner follow the selected account; competitors and inspo are shared. |
 | **Overview** | Followers, views, new followers, engagement rate and post count for 7 / 28 / 90 days, each compared with the previous period. Daily views and follower charts, average views by content pillar, top posts. |
 | **Posts** | Sortable table of every post, filterable by pillar. Shows which pillars get the most shares and saves, and how video length affects watch-through. |
 | **Planner** | Board for video ideas: Idea → Scripted → Filmed → Scheduled → Posted, with hook, pillar and planned date. |
@@ -21,7 +22,7 @@ Planner, competitors and inspo are saved in your browser (localStorage), so they
 
 ## Sample data
 
-The analytics are **generated sample data** (`src/data/sampleData.js`). The suggested competitors are real accounts in the self-love and wellbeing space, but they're only starting points, so swap them for your actual competitors.
+The analytics are **generated sample data** (`src/data/sampleData.js`). The handles are real; the content pillars and captions for each account are placeholders, so edit them in that file to match what you actually post. The suggested competitors are real accounts in the self-love and wellbeing space, but they're only starting points, so swap them for your actual competitors.
 
 ## Connecting real TikTok data
 

@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { BarList, LineChart } from '../components/charts.jsx';
 import { StatTile } from '../components/StatTile.jsx';
-import { PILLARS } from '../data/sampleData.js';
 import { compact, engagementRate, pct, shortDate, sum } from '../lib/format.js';
 
 const RANGES = [
@@ -17,7 +16,7 @@ function inWindow(list, from, to) {
   });
 }
 
-export function Overview({ daily, posts }) {
+export function Overview({ daily, posts, pillars }) {
   const [days, setDays] = useState(28);
 
   const stats = useMemo(() => {
@@ -37,7 +36,7 @@ export function Overview({ daily, posts }) {
     const er = currentPosts.length ? sum(currentPosts.map((p) => ({ v: engagementRate(p) })), 'v') / currentPosts.length : 0;
     const prevEr = previousPosts.length ? sum(previousPosts.map((p) => ({ v: engagementRate(p) })), 'v') / previousPosts.length : null;
 
-    const byPillar = PILLARS.map((pillar) => {
+    const byPillar = pillars.map((pillar) => {
       const list = currentPosts.filter((p) => p.pillar === pillar);
       return {
         label: pillar,
@@ -57,7 +56,7 @@ export function Overview({ daily, posts }) {
       erDelta: prevEr == null ? null : change(er, prevEr),
       postDelta: previous.length ? change(currentPosts.length, previousPosts.length) : null,
     };
-  }, [daily, posts, days]);
+  }, [daily, posts, pillars, days]);
 
   const bestPillar = stats.byPillar[0];
 

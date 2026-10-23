@@ -42,6 +42,9 @@ export function LineChart({ data, valueKey, label, height = 220, color = 'var(--
 
   const line = data.map((d, i) => `${i ? 'L' : 'M'}${x(i)},${y(d[valueKey])}`).join('');
   const area = `${line}L${x(data.length - 1)},${y(min)}L${x(0)},${y(min)}Z`;
+  // Small steps on big numbers (e.g. 50 followers on 3,900) need full digits,
+  // or compact labels repeat.
+  const tickFormat = (v) => (step < 100 && Math.abs(v) >= 1000 ? Math.round(v).toLocaleString() : format(v));
   const ticks = Array.from({ length: Math.round((max - min) / step) + 1 }, (_, i) => min + i * step);
   const dateTicks = [0, Math.floor((data.length - 1) / 2), data.length - 1];
 
@@ -62,7 +65,7 @@ export function LineChart({ data, valueKey, label, height = 220, color = 'var(--
         {ticks.map((t) => (
           <g key={t}>
             <line className="grid" x1={pad.left} x2={pad.left + innerW} y1={y(t)} y2={y(t)} />
-            <text className="axis" x={pad.left - 8} y={y(t)} dy="0.32em" textAnchor="end">{format(t)}</text>
+            <text className="axis" x={pad.left - 8} y={y(t)} dy="0.32em" textAnchor="end">{tickFormat(t)}</text>
           </g>
         ))}
         {dateTicks.map((i) => (

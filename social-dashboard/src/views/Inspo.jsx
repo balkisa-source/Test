@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { PILLARS } from '../data/sampleData.js';
 import { newId } from '../lib/useStoredState.js';
 
 const EMPTY_INSPO = { title: '', url: '', account: '', format: '', tags: '', notes: '' };
@@ -47,7 +46,7 @@ export function Inspo({ competitors, setCompetitors, inspo, setInspo, onUseIdea 
 
       <h2 className="section-title">Accounts to watch</h2>
       <p className="muted small">
-        Starter picks from the self-love and wellbeing space. Open their profiles to check current numbers, and remove any that don’t fit.
+        Starter picks from the self-love, wellbeing and journaling space. Shared by both of your accounts. Open their profiles to check current numbers, and remove any that don’t fit.
       </p>
       <div className="competitors">
         {competitors.map((c) => (
@@ -119,12 +118,13 @@ export function Inspo({ competitors, setCompetitors, inspo, setInspo, onUseIdea 
   );
 }
 
-export function ideaFromInspo(item) {
+export function ideaFromInspo(item, account) {
   return {
     id: newId('d'),
     title: item.title,
     hook: '',
-    pillar: PILLARS[0],
+    pillar: account.pillars[0],
+    account: account.handle,
     date: '',
     stage: 'Idea',
     source: item.account ? `@${item.account}` : item.title,
